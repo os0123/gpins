@@ -1,0 +1,551 @@
+
+practical 2 
+Create a Java WS for performing basic calculations like
+addition,subtraction,multiplicationandDivisionandcreateajavaclientthatc
+onsumesthesame.
+jsp
+  <body>
+        <%
+        double num1=Double.parseDouble(request.getParameter("num1"));        
+        double num2=Double.parseDouble(request.getParameter("num2"));
+        String choice=request.getParameter("operation");
+        if(choice.equals("add")){
+            try {
+	mypack.Calculator_Service service = new mypack.Calculator_Service();
+	mypack.Calculator port = service.getCalculatorPort();
+	
+	double result = port.addition(num1, num2);
+	out.println("Result = "+result);
+    } catch (Exception ex) {
+	// TODO handle custom exceptions here
+    }
+            
+        }else if (choice.equals("sub")){
+            try {
+                mypack.Calculator_Service service = new mypack.Calculator_Service();
+                mypack.Calculator port = service.getCalculatorPort();
+                double result = port.subtraction(num1, num2);
+                out.println("Result = "+result);
+                } 
+            catch (Exception ex) {
+	// TODO handle custom exceptions here
+             }
+            
+        }else if (choice.equals("mul")){
+            try {
+                mypack.Calculator_Service service = new mypack.Calculator_Service();
+                mypack.Calculator port = service.getCalculatorPort();
+                double result = port.multiplication(num1, num2);
+                out.println("Result = "+result);
+                } 
+            catch (Exception ex) {
+	// TODO handle custom exceptions here
+    }
+            
+        }else if (choice.equals("div")){
+            try {
+                mypack.Calculator_Service service = new mypack.Calculator_Service();
+                mypack.Calculator port = service.getCalculatorPort();
+                double result = port.devision(num1, num2);
+                out.println("Result = "+result);
+                } 
+            catch (Exception ex) {
+	// TODO handle custom exceptions here
+    }
+            
+        }
+        %>
+    </body>
+----------------
+html 
+<form action="index.jsp">
+            Enter First Integer:&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="text" name="num1" value="" /><br>
+            Enter Second Integer:
+            <input type="text" name="num2" value="" /><br>
+            --Select any operation--<br>
+            <input type="radio" name="operation" value="add" />
+            Addition<br>
+            <input type="radio" name="operation" value="sub" />
+            Subtraction<br>
+            <input type="radio" name="operation" value="mul" />
+            Multiplication<br>
+            <input type="radio" name="operation" value="div" />
+            Division<br>
+            <input type="submit" value="Solve" />
+        </form>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+practical 3 Create a web service that gives – (i) NSE Index, (ii) BSE Index,
+(iii)GoldRate.Thevaluesarestoredindatabase.Alsocreateawebclientfor
+asharetrading firmthatdisplaysthesevalueson itshomepage
+        int nse=0;
+        try{
+        Class.forName("org.apache.derby.jdbc.ClientDriver");
+        Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/stock","mayank","2003");
+        Statement smt=con.createStatement();
+        ResultSet rs=smt.executeQuery("SELECT * FROM STOCK");
+        rs.next();
+        nse=rs.getInt("NSE_INDEX");
+        con.close();
+        }
+        catch(Exception e){
+       e.printStackTrace();
+        }
+        return nse;
+---------------------------------------------------------
+jsp
+<body>
+        <%
+            String choice=request.getParameter("stock");
+            if(choice.equals("BSE")){
+    try {
+	mypack.Stockapp_Service service = new mypack.Stockapp_Service();
+	mypack.Stockapp port = service.getStockappPort();
+	// TODO process result here
+	int result = port.bseINDEX();
+	out.println("BSE_INDEX = "+result);
+    } catch (Exception ex) {
+	// TODO handle custom exceptions here
+    }
+            }else if(choice.equals("NSE")){
+                try {
+	mypack.Stockapp_Service service = new mypack.Stockapp_Service();
+	mypack.Stockapp port = service.getStockappPort();
+	// TODO process result here
+	int result = port.nseINDEX();
+	out.println("NSE_INDEX = "+result);
+    } catch (Exception ex) {
+	// TODO handle custom exceptions here
+    }
+            }else if(choice.equals("GOLD")){
+            try {
+	mypack.Stockapp_Service service = new mypack.Stockapp_Service();
+	mypack.Stockapp port = service.getStockappPort();
+	// TODO process result here
+	int result = port.goldRATE();
+	out.println("GOLD_RATE = "+result);
+    } catch (Exception ex) {
+	// TODO handle custom exceptions here
+    }
+            }
+        %>
+    </body>
+-------------------------
+html
+<form action="index.jsp">
+Select from these options---<br>
+<input type="radio" name="stock" value="BSE" />BSE_INDEX<br>
+<input type="radio" name="stock" value="NSE" />NSE_INDEX<br>
+<input type="radio" name="stock" value="GOLD" />GOLD_RATE<br>
+<input type="submit" value="Submit" />
+</form>
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+practical 4 Create a web service for UGC that contains a method which
+acceptscollege name as parameter and returns the NAAC rating. The
+collegenamesandtheirratingsarestoredindatabase.Designawebclienttotes
+ttheabovewebservice.
+web services
+String naac_rating = "-";
+        try {
+            //Driver specification
+            //Driver class 
+           Class.forName("org.apache.derby.jdbc.ClientDriver");
+           Connection con =DriverManager.getConnection("jdbc:derby://localhost:1527/stock","mayank","2003");
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM NAAC WHERE COLLEGE_NAME='"+college+"'");
+            rs.next();
+            naac_rating = rs.getString("RATING");
+            con.close();
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+-------------------------------------------------------------
+jsp
+<body>
+<%
+    try {
+	mypack.NAAC_Service service = new mypack.NAAC_Service();
+	mypack.NAAC port = service.getNAACPort();
+	 // TODO initialize WS operation arguments here
+	java.lang.String college = request.getParameter("college");
+	// TODO process result here
+	java.lang.String result = port.getRating(college);
+	out.println("NAAC_RATING = "+result);
+    } catch (Exception ex) {
+	// TODO handle custom exceptions here
+    }
+    %>
+        return naac_rating;
+</body>
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+practical 5 Designawebserviceforachannelcontaining2functions–
+1
+stfunctioncalledgetBreakingNewswhichacceptsdateasstringparameterand
+returns special news of that day, 2nd function called getPrediction
+acceptssunsignnameasstringparameterandreturnspredictionsasstring.
+Designaclienttotesttheabovewebservice.
+web Services 
+getBreakingNews-
+String getnews = "";
+        try {
+            //Driver specification
+            //Driver class 
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            Connection con =DriverManager.getConnection("jdbc:derby://localhost:1527/stock","mayank","2003");
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM BREAKINGNEWS WHERE DATE='"+date+"'");
+            rs.next();
+            getnews = rs.getString("NEWS");
+            con.close();
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return getnews;
+getPrediction
+String predict = "";
+        try { 
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            Connection con =DriverManager.getConnection("jdbc:derby://localhost:1527/stock","mayank","2003");
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM PREDICTING WHERE SUNSIGN='"+sunsign+"'");
+            rs.next();
+            predict = rs.getString("PREDICTION");
+            con.close();
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return predict;
+--------------------------------------------------------------------------
+html
+<body>
+        <form action="index.jsp">
+            <h3>NEWS</h3><br>
+            Enter the Date:<input type="text" name="date" value="" /><br>
+            <input type="submit" value="Get-News" /><br>
+            <div>
+                <h3>
+                    PREDICATION
+                </h3><br>
+            Enter SunSign:<input type="text" name="Sunsign" value="" /><br>
+            <input type="submit" value="Get-Predication" /><br>                    
+            </div>
+        </form>
+    </body>
+------------------------------------------------------------------------
+jsp
+<%
+            if(request.getParameter("date")!="")
+            {
+            try {
+                mypack.Channel_Service service = new mypack.Channel_Service();
+                mypack.Channel port = service.getChannelPort();
+	 // TODO initialize WS operation arguments here
+                java.lang.String date = request.getParameter("date");
+	// TODO process result here
+                java.lang.String result = port.getBreakingNews(date);
+                out.println("BREAKING NEWS = "+result);
+                } 
+            catch (Exception ex) {
+	// TODO handle custom exceptions here
+                }
+            }
+            if(request.getParameter("Sunsign")!="")
+            {
+                try {
+                    mypack.Channel_Service service = new mypack.Channel_Service();
+                    mypack.Channel port = service.getChannelPort();
+	 // TODO initialize WS operation arguments here
+                    java.lang.String sunsign = request.getParameter("Sunsign");
+	// TODO process result here
+                    java.lang.String result = port.getPrediction(sunsign);
+                    out.println("<br>Predication = "+result);
+                } 
+                catch (Exception ex) 
+                {
+	// TODO handle custom exceptions here
+                }
+            }
+        %>
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+practical 6 DesignaRestfulwebservicefromadatabasetableEmployeewithcolumnsempi
+d,empnameandDesignation.Testthewebserviceforthevarioushttprequests
+jsp
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
+        <style>
+            table {font-family: arial, sans-serif; border-collapse: collapse;}
+            td, th {border: 1px solid #000000; text-align: center;padding: 8px;}
+        </style>
+        <script>
+            var request = new XMLHttpRequest(); request.open('GET','http://localhost:8080/practical6/webresources/mypack.employee', true); 
+            request.onload = function (){
+                var data = JSON.parse(this.response);
+                for (var i = 0; i < data.length; i++) {
+                    var table = document.getElementById("Employee");
+                    var row = table.insertRow();
+                    var cell1 = row.insertCell(0); 
+                    var cell2 = row.insertCell(1); 
+                    var cell3=row.insertCell(2);
+                    cell1.innerHTML = data[i].empId;
+                    cell2.innerHTML = data[i].empName;
+                    cell3.innerHTML=data[i].designation;
+                }
+            };
+            request.send();
+            </script>
+    </head>
+    <body>
+        <table id="Employee">
+            <tr>
+                <th>ID</th>
+                <th>EMPLOYEE NAME</th>
+                <th>DESIGNATION</th>
+            </tr>
+        </table>
+    </body>
+</html>
+-------------------------------------------------------------------------------
+html
+ <body>
+        <h2> Employee Details</h2>
+        <Form action="newjsp.jsp">
+            Employee Details:<input type="submit" value="Employee" name="Employee"/>
+        </Form> 
+</body>
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+practical 7 Design a Restful webservice from a database table Student with
+columnsrollno,nameandtotalmarks.Createarestfulclientthatdisplaysthedataby
+accessing restfulservice.
+jsp
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
+    <style>
+    table{
+    font-family: arial,sans-serif;
+    border-collapse: collapse;
+    }
+    th,td{
+    text-align:center;
+    border:1px solid #000000;
+    padding:8px;
+    }
+    </style>
+    <script>
+    var request = new XMLHttpRequest();
+    request.open('GET','http://localhost:8080/practical7/webresources',true);
+    request.onload=function()
+    {
+    var data=JSON.parse(this.response);
+    for(var i=0;i<data.length;i++)
+    {
+    var table = document.getElementById("STUDENTS");
+    var row = table.insertRow();
+    var cell1 = row.insertCell(0);
+     var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    cell1.innerHTML=data[i].rollno;
+    cell2.innerHTML=data[i].name;
+    cell3.innerHTML=data[i].totalmarks;
+    }
+    };
+    request.send();
+    </script>
+    </head>
+    <body>
+    <table id="STUDENTS">
+    <tr>
+    <th>Rollno</th>
+    <th>Name</th>
+    <th>Marks</th>
+    </tr>
+    </table>
+    </body>
+
+---------------------------------------------------------------------------------
+html
+<form action="newjsp.jsp">
+            <input type="submit" name="submit" value="GET STUDENTS">
+</form>
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+practical 8 Create a WCF service to perform calculations like Addition, Subtraction
+,MultiplicationandDivision.CreateaclientforWCFwhichinvokesthevariousoperat
+ions.
+
+  IService1
+ public interface IService1
+    {
+        [OperationContract]
+        double Sum(double a, double b);
+
+        [OperationContract]
+        double Product(double a, double b);
+
+
+        [OperationContract]
+        double Difference(double a, double b);
+
+        [OperationContract]
+        double Quotient(double a, double b);
+    }
+---------------------------------------------------------------------
+Service1.svs.cs	
+public class Service1 : IService1
+    {
+        public double Difference(double a, double b)
+        {
+            double result = a - b;
+            return result;
+
+        }
+
+        public double Product(double a, double b)
+        {
+            double result = a * b;
+            return result;
+
+        }
+
+        public double Quotient(double a, double b)
+        {
+            double result = a / b;
+            return result;
+
+        }
+
+        public double Sum(double a, double b)
+        {
+            double result = a + b;
+            return result;
+
+        }
+    }
+---------------------------------------------------------------------------------------
+webform1.aspx
+<form id="form1" runat="server">
+        <div>
+             Enter first number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:TextBox ID="fno" runat="server"></asp:TextBox>
+            <br />
+            <br />
+            Enter second number:&nbsp;
+            <asp:TextBox ID="sno" runat="server" ></asp:TextBox>
+            <br />
+            <br />
+            Result:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:TextBox ID="res" runat="server"></asp:TextBox>
+            <br />
+            <br />
+            <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Sum" />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:Button ID="Button2" runat="server" OnClick="Button2_Click" Text="Product" Width="67px" />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:Button ID="Button3" runat="server" OnClick="Button3_Click" Text="Difference" />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:Button ID="Button4" runat="server" OnClick="Button4_Click" Text="Quotient" />
+            <br />
+            <br />
+
+        </div>
+    </form>
+------------------------------------------------------------------------------------------------
+webForm1.aspx.cs
+
+public partial class WebForm1 : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+            ServiceReference1.Service1Client client = new ServiceReference1.Service1Client();
+            double num1 = double.Parse(fno.Text);
+            double num2 = double.Parse(sno.Text);
+            res.Text = Convert.ToString(client.Sum(num1, num2));
+        }
+
+        protected void Button2_Click(object sender, EventArgs e)
+        {
+            ServiceReference1.Service1Client client = new ServiceReference1.Service1Client();
+            double num1 = double.Parse(fno.Text);
+            double num2 = double.Parse(sno.Text);
+            res. Text = Convert.ToString(client.Product(num1, num2));
+        }
+
+        protected void Button3_Click(object sender, EventArgs e)
+        {
+            ServiceReference1.Service1Client client = new ServiceReference1.Service1Client();
+            double num1 = double.Parse(fno.Text);
+            double num2 = double.Parse(sno.Text);
+            res.Text = Convert.ToString(client.Difference(num1, num2));
+        }
+
+        protected void Button4_Click(object sender, EventArgs e)
+        {
+            ServiceReference1.Service1Client client = new ServiceReference1.Service1Client();
+            double num1 = double.Parse(fno.Text);
+            double num2 = double.Parse(sno.Text);
+            res.Text = Convert.ToString(client.Quotient(num1, num2));
+        }
+    }
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+practical 9 CreateaWCFservicewithdifferentendpointforSoapbasedandRestbasedimpleme
+ntation.
+
+IService1
+public interface IService1
+    {
+        [OperationContract]
+        [System.ServiceModel.Web.WebInvoke(Method = "GET", UriTemplate = "/SayHello/{value}", RequestFormat = System.ServiceModel.Web.WebMessageFormat.Json, ResponseFormat = System.ServiceModel.Web.WebMessageFormat.Json)]
+        string SayHello(string value);
+    }
+------------------------------------------------------------------------
+services1.svc.cs
+ public class Service1 : IService1
+    {
+        public string SayHello(string value)
+        {
+            return string.Format($"Hello {value}!");
+        }
+    }
+----------------------------------------------------------------------
+webconfig
+<system.serviceModel>
+	  <services>
+		  <service name="practical9.Service1">
+			  <endpoint address="jsonservice" binding="webHttpBinding" contract="practical9.IService1" behaviorConfiguration="web"></endpoint>
+			  <endpoint address="soapservice" binding="basicHttpBinding" contract="practical9.IService1"></endpoint>
+
+		  </service>
+
+	  </services>
+    <behaviors>
+      <serviceBehaviors>
+        <behavior>
+          <!-- To avoid disclosing metadata information, set the values below to false before deployment -->
+          <serviceMetadata httpGetEnabled="true" httpsGetEnabled="true"/>
+          <!-- To receive exception details in faults for debugging purposes, set the value below to true.  Set to false before deployment to avoid disclosing exception information -->
+          <serviceDebug includeExceptionDetailInFaults="false"/>
+        </behavior>
+      </serviceBehaviors>
+		<endpointBehaviors>
+			<behavior name="web">
+				<webHttp/>
+			</behavior>
+		</endpointBehaviors>
+    </behaviors>
+    <protocolMapping>
+        <add binding="basicHttpsBinding" scheme="https" />
+    </protocolMapping>    
+    <serviceHostingEnvironment aspNetCompatibilityEnabled="true" multipleSiteBindingsEnabled="true" />
+  </system.serviceModel>
+
