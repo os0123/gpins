@@ -1,0 +1,475 @@
+CAESER CIPHER
+
+dictionary = ['a','b','c','d',
+ 'e','f','g','h',
+ 'i','j','k','l',
+ 'm','n','o','p',
+ 'q','r','s','t',
+ 'u','v','w','x',
+ 'y','z','0','1',
+ '2','3','4','5',
+ '6','7','8','9',
+ '!','@','#','$',
+ '%','^','*']
+plain_text = input("Enter Plain Text: ").replace(" ", "").lower()
+key = int(input("Key: "))
+cipher_text = ""
+print("Plain Text: ", plain_text)
+# Cipher
+for letter in plain_text:
+ cipher_text += dictionary[(dictionary.index(letter)+key)%len(dictionary)]
+print("Cipher Text: ", cipher_text)
+
+MONOALPHABETIC
+
+dictionary = ['a','b','c','d',
+ 'e','f','g','h',
+ 'i','j','k','l',
+ 'm','n','o','p',
+ 'q','r','s','t',
+ 'u','v','w','x',
+ 'y','z']
+plain_text = input("Enter Plain Text: ").replace(" ", "").lower()
+cipher_text = ""
+# Cipher
+for letter in plain_text:
+ cipher_text += dictionary[-dictionary.index(letter)-1]
+print("Cipher Text: ",cipher_text)
+
+
+VERNAM CIPHER
+
+dictionary = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+    'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+    'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+    'y', 'z'
+]
+
+plain_text = input("Enter Plain Text: ").replace(" ", "").lower()
+
+# Taking input for the key (same length as plain text)
+while True:
+    key = input("Enter key (text) (same length as plain text):").replace(" ", "").lower()
+    if len(key) == len(plain_text):
+        break
+
+print("Plain Text:", plain_text)
+
+cipher_text = ""
+
+# Ex-OR operation function
+def performXOR(binary_letter1, binary_letter2):
+    binary_output = ""
+    for i in range(len(binary_letter1)):
+        if binary_letter1[i] == binary_letter2[i]:
+            binary_output += "0"
+        else:
+            binary_output += "1"
+    return binary_output
+
+for i in range(len(plain_text)):
+    # Converting plain text to binary
+    binary_letter1 = bin(dictionary.index(plain_text[i]))
+    binary_letter2 = bin(dictionary.index(key[i]))
+
+    # Converting binary numbers to the same length
+    binary_letter1 = binary_letter1[2:].zfill(8)
+    binary_letter2 = binary_letter2[2:].zfill(8)
+
+    # Converting binary to letter
+    binary_output = performXOR(binary_letter1, binary_letter2)
+    cipher_text += dictionary[int(binary_output, 2) % len(dictionary)]
+
+print("Cipher Text:", cipher_text)
+
+PLAYFAIR CIPHER
+
+
+key = [
+    ['l', 'g', 'd', 'b', 'a'],
+    ['q', 'm', 'h', 'e', 'c'],
+    ['u', 'r', 'n', 'i', 'f'],
+    ['x', 'v', 's', 'o', 'k'],
+    ['z', 'y', 'w', 't', 'p']
+]
+
+# Taking input and making pairs
+plain_text = input("Enter Plain Text: ").replace(" ", "").replace("j", "i").lower()
+print("Plain Text: ", plain_text)
+bogus_letter = 'x'
+separated_letters = []
+i = 1
+while True:
+    try:
+        if plain_text[i - 1] != plain_text[i]:
+            separated_letters.append(plain_text[i - 1] + plain_text[i])
+            i += 2
+        else:
+            separated_letters.append(plain_text[i] + bogus_letter)
+            i += 1
+    except:
+        if i == len(plain_text):
+            separated_letters.append(plain_text[-1] + bogus_letter)
+        break
+
+print("Letter pairs: ", separated_letters)
+cipher_text = ""
+
+# Search element in key:
+def indexOfLetter(key, letter):
+    for i in range(len(key)):
+        for j in range(len(key[i])):
+            if key[i][j] == letter:
+                return (i, j)
+
+# Cipher
+for pair in separated_letters:
+    letter1_index = indexOfLetter(key, pair[0])
+    letter2_index = indexOfLetter(key, pair[1])
+
+    # rule 1: same column
+    if letter1_index[1] == letter2_index[1]:
+        cipher_text += key[(letter1_index[0] + 1) % len(key)][letter1_index[1]] + key[(letter2_index[0] + 1) % len(key)][letter2_index[1]]
+
+    # rule 2: same row
+    elif letter1_index[0] == letter2_index[0]:
+        cipher_text += key[letter1_index[0]][(letter1_index[1] + 1) % len(key)] + key[letter2_index[0]][(letter2_index[1] + 1) % len(key)]
+
+    # rule 3: different column and row
+    else:
+        cipher_text += key[letter1_index[0]][letter2_index[1]] + key[letter2_index[0]][letter1_index[1]]
+
+print("Cipher Text: ", cipher_text)
+
+
+RAILFENCE CIPHER
+
+def main():
+    text = input('Input Text : ')
+    rows = int(input('Input Rows : '))
+    text = text.replace(' ', '')
+
+    while True:
+        chc = input('Encrypt or Decrypt (0/1): ')
+        if chc in ['0', '1']:
+            break
+        print('Choose 0 / 1')
+
+    print(len(text))
+    if int(chc):
+        arr = [[' ' for y in range(len(text))] for x in range(rows)]
+        for row in arr:
+            print(row)
+
+        dir_down = None
+        row, col = 0, 0
+        for i in range(len(text)):
+            if row == 0:
+                dir_down = True
+            if row == rows - 1:
+                dir_down = False
+
+            arr[row][col] = '*'
+            col += 1
+
+            if dir_down:
+                row += 1
+            else:
+                row -= 1
+
+        print('\n\n')
+        for row in arr:
+            print(row)
+
+        count = 0
+        for row in arr:
+            for i in range(len(row)):
+                if row[i] == '*':
+                    row[i] = text[count]
+                    count += 1
+
+        print('\n\n')
+        for row in arr:
+            print(row)
+
+        result = []
+        row, col = 0, 0
+        for i in range(len(text)):
+            if row == 0:
+                dir_down = True
+            if row == rows - 1:
+                dir_down = False
+
+            if (arr[row][col] != '*'):
+                result.append(arr[row][col])
+                col += 1
+
+            if dir_down:
+                row += 1
+            else:
+                row -= 1
+
+        print('\n', ''.join(result))
+    else:
+        arr = [[] for x in range(rows)]
+        print(arr)
+        count = 0
+        finish = False
+
+        while True:
+            for j in range(0, rows - 1):
+                arr[j].append(text[count])
+                count += 1
+
+                if count >= len(text):
+                    finish = True
+                    break
+
+            if finish:
+                break
+
+            for k in range(rows - 1, 0, -1):
+                arr[k].append(text[count])
+                count += 1
+
+                if count >= len(text):
+                    finish = True
+                    break
+
+            if finish:
+                break
+
+        print(arr)
+
+if __name__ == '__main__':
+    main()
+
+SIMPLECOLUMN CIPHER
+
+import math
+
+plain_text = input("Enter Plain Text: ")
+cols = int(input("Enter number of columns: "))
+rows = math.ceil(len(plain_text) / cols)
+key = input("Enter key: ")
+separated_lines = []
+
+k = 0
+cipher = ""
+
+# Pad the plain text with 'x' to fit the grid
+plain_text = plain_text + "x" * ((cols * rows) - len(plain_text))
+
+for i in range(rows):
+    temp_row = []
+    for j in range(cols):
+        temp_row.append(plain_text[k])
+        k += 1
+    separated_lines.append(temp_row)
+
+print(separated_lines)
+
+for j in key:
+    for i in range(rows):
+        cipher += separated_lines[i][int(j)]
+
+print("Cipher Text:", cipher)
+
+RSA
+
+values = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+          'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+          't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+P = int(input("Enter a Prime Number: "))
+Q = int(input("Enter another Prime Number: "))
+n = P * Q
+phi = (P - 1) * (Q - 1)
+
+while True:
+    e = int(input("Enter an exponent: "))
+    if (e > 1 or e < phi) and e != P and e != Q:
+        break
+
+k = 2
+d = ((k * phi) + 1) / e
+
+print("Public key: ", n, "and", e)
+print("Private key: ", d)
+
+plain_text = input("Enter plain text: ").lower()
+nums = ""
+
+for l in plain_text:
+    nums += str(values.index(l) + 1)
+
+nums = int(nums)
+c = nums ** e % n
+print("Cipher Value: ", c)
+
+dc = c ** d % n
+print("Decrypted Value: ", dc)
+
+DIFFIE HELLMAN
+
+import math
+
+Xa, Xb = input("Enter the value of Xa & Xb: ").split()
+Xa = int(Xa)
+Xb = int(Xb)
+p = int(input("Enter a Prime no. p: "))
+
+# Taking input unless gets a < p
+while True:
+    a = int(input("Enter Primitive Root a, with condition that a < p: "))
+    if a < p:
+        break
+
+Ya = (math.pow(a, Xa) % p)
+Yb = (math.pow(a, Xb) % p)
+Ka = (math.pow(Yb, Xa) % p)
+Kb = (math.pow(Ya, Xb) % p)
+
+if Ka == Kb:
+    print("Transmission successful")
+
+
+OUTPUT
+Enter the value of Xa & Xb: 5 7
+Enter a Prime no. p: 13
+Enter Primitive Root a, with condition that a < p: 11
+Transmission successful
+
+MD5
+
+import hashlib
+text="hello user welcome to cs"
+output= hashlib.md5(text.encode())
+print("Hash of the input string")
+print(output.hexdigest())
+
+HSA SHA
+
+import hmac
+import hashlib
+secret_key = b"NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInC1VN65XAbvqqM6A7H5FATj0j"
+total_params = b"/public/api/ver1/accounts/new?type=binance&amp;name=binance_account&amp;api_key=XXXXXX&amp;secret=YYYYYY"
+signature= hmac.new(secret_key, total_params, hashlib. sha256). hexdigest()
+print("signature = {0}".format(signature))
+
+DES
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.AlgorithmParameterSpec;
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+
+public class DesProgram {
+    private static Cipher encrypt;
+    private static Cipher decrypt;
+    private static final byte[] initialization_vector = { 22, 33, 11, 44, 55, 99, 66, 77 };
+
+    public static void main(String[] args) {
+        String textFile = "C:/SEM 5/INS/demodata.txt";
+        String encryptedData = "C:/SEM 5/INS/encrypdata.txt";
+        String decryptedData = "C:/SEM 5/INS/decrypdata.txt";
+        try {
+            SecretKey scrtkey = KeyGenerator.getInstance("DES").generateKey();
+            AlgorithmParameterSpec aps = new IvParameterSpec(initialization_vector);
+            encrypt = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            encrypt.init(Cipher.ENCRYPT_MODE, scrtkey, aps);
+            decrypt = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            decrypt.init(Cipher.DECRYPT_MODE, scrtkey, aps);
+            encryption(new FileInputStream(textFile), new FileOutputStream(encryptedData));
+            decryption(new FileInputStream(encryptedData), new FileOutputStream(decryptedData));
+            System.out.println("The encrypted and decrypted files have been created successfully.");
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | InvalidAlgorithmParameterException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void encryption(InputStream input, OutputStream output) throws IOException {
+        output = new CipherOutputStream(output, encrypt);
+        writeBytes(input, output);
+    }
+
+    private static void decryption(InputStream input, OutputStream output) throws IOException {
+        input = new CipherInputStream(input, decrypt);
+        writeBytes(input, output);
+    }
+
+    private static void writeBytes(InputStream input, OutputStream output) throws IOException {
+        byte[] writeBuffer = new byte[512];
+        int readBytes = 0;
+        while ((readBytes = input.read(writeBuffer)) >= 0) {
+            output.write(writeBuffer, 0, readBytes);
+        }
+        output.close();
+        input.close();
+    }
+}
+
+AES
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.xml.bind.DatatypeConverter;
+
+public class AESEncryption {
+    public static void main(String[] args) throws Exception {
+        String plainText = "Sanjana Dubey";
+        SecretKey secKey = getSecretEncryptionKey();
+        byte[] cipherText = encryptText(plainText, secKey);
+        String decryptedText = decryptText(cipherText, secKey);
+
+        System.out.println("Original Text: " + plainText);
+        System.out.println("AES Key (Hex Form): " + bytesToHex(secKey.getEncoded()));
+        System.out.println("Encrypted Text (Hex Form): " + bytesToHex(cipherText));
+        System.out.println("Decrypted Text: " + decryptedText);
+    }
+
+    public static SecretKey getSecretEncryptionKey() throws Exception {
+        KeyGenerator generator = KeyGenerator.getInstance("AES");
+        generator.init(128); // The AES key size in the number of bits
+        SecretKey secKey = generator.generateKey();
+        return secKey;
+    }
+
+    public static byte[] encryptText(String plainText, SecretKey secKey) throws Exception {
+        Cipher aesCipher = Cipher.getInstance("AES");
+        aesCipher.init(Cipher.ENCRYPT_MODE, secKey);
+        byte[] byteCipherText = aesCipher.doFinal(plainText.getBytes());
+        return byteCipherText;
+    }
+
+    public static String decryptText(byte[] byteCipherText, SecretKey secKey) throws Exception {
+        Cipher aesCipher = Cipher.getInstance("AES");
+        aesCipher.init(Cipher.DECRYPT_MODE, secKey);
+        byte[] bytePlainText = aesCipher.doFinal(byteCipherText);
+        return new String(bytePlainText);
+    }
+
+    private static String bytesToHex(byte[] hash) {
+        return DatatypeConverter.printHexBinary(hash);
+    }
+}
+
+
+
+
+
